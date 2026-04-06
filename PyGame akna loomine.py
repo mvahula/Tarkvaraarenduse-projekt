@@ -4,11 +4,13 @@ laius = 800
 korgus = 600
 ekraan = pygame.display.set_mode((laius, korgus))
 pygame.display.set_caption("Liikuv ruut")
-valge = (255, 255, 255)
+taust = (245, 200, 220)
 sinine = (0, 100, 255)
-x = laius // 2
-y = korgus // 2
+
 ruudu_suurus = 50
+x = laius // 2 - ruudu_suurus // 2
+y = korgus // 2 - ruudu_suurus // 2
+
 kiirus = 1
 too_kaib = True
 while too_kaib:
@@ -16,15 +18,58 @@ while too_kaib:
         if sundmus.type == pygame.QUIT:
             too_kaib = False
     klahvid = pygame.key.get_pressed()
-    if klahvid[pygame.K_LEFT]:
-        x -= kiirus
-    if klahvid[pygame.K_RIGHT]:
-        x += kiirus
-    if klahvid[pygame.K_UP]:
-        y -= kiirus
-    if klahvid[pygame.K_DOWN]:
-        y += kiirus
-    ekraan.fill(valge)
+    if 0 <= x <= 750 and 0 <= y <= 550:
+        if klahvid[pygame.K_LEFT]:
+            x -= kiirus
+        if klahvid[pygame.K_RIGHT]:
+            x += kiirus
+        if klahvid[pygame.K_UP]:
+            y -= kiirus
+        if klahvid[pygame.K_DOWN]:
+            y += kiirus
+    else:
+        if x < 0:
+            x = 0
+            if klahvid[pygame.K_LEFT]:
+                pass
+            if klahvid[pygame.K_RIGHT]:
+                x += kiirus
+            if klahvid[pygame.K_UP]:
+                y -= kiirus
+            if klahvid[pygame.K_DOWN]:
+                y += kiirus
+        if x > 750:
+            x = 750
+            if klahvid[pygame.K_LEFT]:
+                x -= kiirus
+            if klahvid[pygame.K_RIGHT]:
+                pass
+            if klahvid[pygame.K_UP]:
+                y -= kiirus
+            if klahvid[pygame.K_DOWN]:
+                y += kiirus
+        if y < 0:
+            y = 0
+            if klahvid[pygame.K_LEFT]:
+                x -= kiirus
+            if klahvid[pygame.K_RIGHT]:
+                x += kiirus
+            if klahvid[pygame.K_UP]:
+                pass
+            if klahvid[pygame.K_DOWN]:
+                y += kiirus
+        if y > 550:
+            y = 550
+            if klahvid[pygame.K_LEFT]:
+                x -= kiirus
+            if klahvid[pygame.K_RIGHT]:
+                x += kiirus
+            if klahvid[pygame.K_UP]:
+                y -= kiirus
+            if klahvid[pygame.K_DOWN]:
+                pass
+
+    ekraan.fill(taust)
     pygame.draw.rect(ekraan, sinine, (x, y, ruudu_suurus, ruudu_suurus))
     pygame.display.flip()
 pygame.quit()
