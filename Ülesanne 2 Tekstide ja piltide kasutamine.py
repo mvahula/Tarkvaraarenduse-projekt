@@ -102,5 +102,5 @@ while running:
             running = False
 
 
-#Lõpetan pygame'i töö
+#Lõpetan pygame'i töö.
 pygame.quit()
