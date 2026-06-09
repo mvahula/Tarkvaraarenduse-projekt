@@ -65,6 +65,8 @@ while running:
             running = False
 '''
 
+
+
 #Funktsioonid
 #Joonistan maja
 
