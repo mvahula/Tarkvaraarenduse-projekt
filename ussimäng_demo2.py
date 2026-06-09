@@ -1,186 +1,129 @@
+#Python Code for Snake Game
+#https://www.edureka.co/blog/snake-game-with-pygame/?utm_source=chatgpt.com
+
 import pygame
+import time
 import random
 
 pygame.init()
 
-# värvid
-white = [255, 255, 255]
-black = [0, 0, 0]
-red = [213, 50, 80]
-green = [0, 180, 0]
-blue = [50, 153, 213]
-gray = [100, 100, 100]
+white = (255, 255, 255)
+yellow = (255, 255, 102)
+black = (0, 0, 0)
+red = (213, 50, 80)
+green = (0, 255, 0)
+blue = (50, 153, 213)
 
-# ekraani seaded
-screenX = 640
-screenY = 480
-screen = pygame.display.set_mode([screenX, screenY])
-pygame.display.set_caption("Snake Game - Takistused")
+dis_width = 600
+dis_height = 400
+
+dis = pygame.display.set_mode((dis_width, dis_height))
+pygame.display.set_caption('Snake Game by Edureka')
+
 clock = pygame.time.Clock()
 
-# mängu seaded
-snakeBlock = 20
-snakeSpeed = 12
+snake_block = 10
+snake_speed = 15
 
-# fondid
-font = pygame.font.SysFont(None, 36)
-bigFont = pygame.font.SysFont(None, 60)
+font_style = pygame.font.SysFont("bahnschrift", 25)
+score_font = pygame.font.SysFont("comicsansms", 35)
 
-# ussi joonistamine
-def drawSnake(snakeList):
-    for block in snakeList:
-        pygame.draw.rect(screen, green, [block[0], block[1], snakeBlock, snakeBlock])
 
-# uue toidu loomine
-def newFood():
-    foodX = random.randrange(0, screenX - snakeBlock, snakeBlock)
-    foodY = random.randrange(40, screenY - snakeBlock, snakeBlock)
-    return foodX, foodY
+def Your_score(score):
+    value = score_font.render("Your Score: " + str(score), True, yellow)
+    dis.blit(value, [0, 0])
 
-# takistuste loomine
-def createWalls():
-    walls = [
-        [160, 160],
-        [180, 160],
-        [200, 160],
-        [220, 160],
-        [400, 300],
-        [420, 300],
-        [440, 300],
-        [460, 300]
-    ]
-    return walls
 
-# mängu tsükkel
+def our_snake(snake_block, snake_list):
+    for x in snake_list:
+        pygame.draw.rect(dis, black, [x[0], x[1], snake_block, snake_block])
+
+
+def message(msg, color):
+    mesg = font_style.render(msg, True, color)
+    dis.blit(mesg, [dis_width / 6, dis_height / 3])
+
+
 def gameLoop():
-    gameover = False
-    gameclose = False
+    game_over = False
+    game_close = False
 
-    # algkoordinaadid
-    posX = screenX / 2
-    posY = screenY / 2
+    x1 = dis_width / 2
+    y1 = dis_height / 2
 
-    # liikumine
-    speedX = 0
-    speedY = 0
+    x1_change = 0
+    y1_change = 0
 
-    # uss
-    snakeList = []
-    snakeLength = 1
+    snake_List = []
+    Length_of_snake = 1
 
-    # toit ja takistused
-    foodX, foodY = newFood()
-    walls = createWalls()
+    foodx = round(random.randrange(0, dis_width - snake_block) / 10.0) * 10.0
+    foody = round(random.randrange(0, dis_height - snake_block) / 10.0) * 10.0
 
-    score = 0
+    while not game_over:
 
-    while not gameover:
-
-        while gameclose:
-            screen.fill(blue)
-
-            loseText = bigFont.render("Mäng läbi!", True, red)
-            scoreText = font.render("Skoor: " + str(score), True, white)
-            againText = font.render("C - uuesti, Q - välju", True, white)
-
-            screen.blit(loseText, [screenX / 2 - 130, screenY / 2 - 80])
-            screen.blit(scoreText, [screenX / 2 - 60, screenY / 2 - 20])
-            screen.blit(againText, [screenX / 2 - 140, screenY / 2 + 30])
-
+        while game_close == True:
+            dis.fill(blue)
+            message("You Lost! Press C-Play Again or Q-Quit", red)
+            Your_score(Length_of_snake - 1)
             pygame.display.update()
 
             for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    gameover = True
-                    gameclose = False
-
-                # klahvivajutus
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_q:
-                        gameover = True
-                        gameclose = False
-
+                        game_over = True
+                        game_close = False
                     if event.key == pygame.K_c:
                         gameLoop()
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                gameover = True
-
-            # klahvivajutus
+                game_over = True
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_LEFT and speedX == 0:
-                    speedX = -snakeBlock
-                    speedY = 0
+                if event.key == pygame.K_LEFT:
+                    x1_change = -snake_block
+                    y1_change = 0
+                elif event.key == pygame.K_RIGHT:
+                    x1_change = snake_block
+                    y1_change = 0
+                elif event.key == pygame.K_UP:
+                    y1_change = -snake_block
+                    x1_change = 0
+                elif event.key == pygame.K_DOWN:
+                    y1_change = snake_block
+                    x1_change = 0
 
-                elif event.key == pygame.K_RIGHT and speedX == 0:
-                    speedX = snakeBlock
-                    speedY = 0
+        if x1 >= dis_width or x1 < 0 or y1 >= dis_height or y1 < 0:
+            game_close = True
+        x1 += x1_change
+        y1 += y1_change
+        dis.fill(blue)
+        pygame.draw.rect(dis, green, [foodx, foody, snake_block, snake_block])
+        snake_Head = []
+        snake_Head.append(x1)
+        snake_Head.append(y1)
+        snake_List.append(snake_Head)
+        if len(snake_List) > Length_of_snake:
+            del snake_List[0]
 
-                elif event.key == pygame.K_UP and speedY == 0:
-                    speedY = -snakeBlock
-                    speedX = 0
+        for x in snake_List[:-1]:
+            if x == snake_Head:
+                game_close = True
 
-                elif event.key == pygame.K_DOWN and speedY == 0:
-                    speedY = snakeBlock
-                    speedX = 0
-
-        # ussi liikumine
-        posX += speedX
-        posY += speedY
-
-        # mängu piirid
-        if posX >= screenX or posX < 0 or posY >= screenY or posY < 40:
-            gameclose = True
-
-        # taust
-        screen.fill(blue)
-
-        # info riba
-        pygame.draw.rect(screen, black, [0, 0, screenX, 40])
-        scoreText = font.render("Skoor: " + str(score), True, white)
-        screen.blit(scoreText, [10, 8])
-
-        # toit
-        pygame.draw.rect(screen, red, [foodX, foodY, snakeBlock, snakeBlock])
-
-        # takistused
-        for wall in walls:
-            pygame.draw.rect(screen, gray, [wall[0], wall[1], snakeBlock, snakeBlock])
-
-        # ussi pea
-        snakeHead = []
-        snakeHead.append(posX)
-        snakeHead.append(posY)
-        snakeList.append(snakeHead)
-
-        # ussi pikkuse hoidmine
-        if len(snakeList) > snakeLength:
-            del snakeList[0]
-
-        # enda vastu minemine
-        for block in snakeList[:-1]:
-            if block == snakeHead:
-                gameclose = True
-
-        # takistuse vastu minemine
-        for wall in walls:
-            if posX == wall[0] and posY == wall[1]:
-                gameclose = True
-
-        drawSnake(snakeList)
+        our_snake(snake_block, snake_List)
+        Your_score(Length_of_snake - 1)
 
         pygame.display.update()
 
-        # toidu söömine
-        if posX == foodX and posY == foodY:
-            foodX, foodY = newFood()
-            snakeLength += 1
-            score += 1
+        if x1 == foodx and y1 == foody:
+            foodx = round(random.randrange(0, dis_width - snake_block) / 10.0) * 10.0
+            foody = round(random.randrange(0, dis_height - snake_block) / 10.0) * 10.0
+            Length_of_snake += 1
 
-        clock.tick(snakeSpeed)
+        clock.tick(snake_speed)
 
     pygame.quit()
     quit()
+
 
 gameLoop()

@@ -1,192 +1,184 @@
+#Snake Game in Python - Using Pygame module
+#https://www.geeksforgeeks.org/python/snake-game-in-python-using-pygame-module/
+
+# importing libraries
+
+# importing libraries
 import pygame
+import time
 import random
 
+snake_speed = 15
+
+# Window size
+window_x = 720
+window_y = 480
+
+# defining colors
+black = pygame.Color(0, 0, 0)
+white = pygame.Color(255, 255, 255)
+red = pygame.Color(255, 0, 0)
+green = pygame.Color(0, 255, 0)
+blue = pygame.Color(0, 0, 255)
+
+# Initialising pygame
 pygame.init()
 
-# värvid
-white = [255, 255, 255]
-black = [0, 0, 0]
-red = [213, 50, 80]
-green = [0, 180, 0]
-blue = [50, 153, 213]
-yellow = [255, 255, 0]
-purple = [160, 80, 220]
+# Initialise game window
+pygame.display.set_caption('GeeksforGeeks Snakes')
+game_window = pygame.display.set_mode((window_x, window_y))
 
-# ekraani seaded
-screenX = 640
-screenY = 480
-screen = pygame.display.set_mode([screenX, screenY])
-pygame.display.set_caption("Snake Game - Eritoit")
-clock = pygame.time.Clock()
+# FPS (frames per second) controller
+fps = pygame.time.Clock()
 
-# mängu seaded
-snakeBlock = 20
-snakeSpeed = 10
+# defining snake default position
+snake_position = [100, 50]
 
-# fondid
-font = pygame.font.SysFont(None, 36)
-bigFont = pygame.font.SysFont(None, 60)
+# defining first 4 blocks of snake body
+snake_body = [[100, 50],
+              [90, 50],
+              [80, 50],
+              [70, 50]
+              ]
+# fruit position
+fruit_position = [random.randrange(1, (window_x // 10)) * 10,
+                  random.randrange(1, (window_y // 10)) * 10]
 
-# ussi joonistamine
-def drawSnake(snakeList):
-    for block in snakeList:
-        pygame.draw.rect(screen, green, [block[0], block[1], snakeBlock, snakeBlock])
+fruit_spawn = True
 
-# toidu loomine
-def newFood():
-    foodX = random.randrange(0, screenX - snakeBlock, snakeBlock)
-    foodY = random.randrange(40, screenY - snakeBlock, snakeBlock)
-    return foodX, foodY
+# setting default snake direction towards
+# right
+direction = 'RIGHT'
+change_to = direction
 
-# mängu tsükkel
-def gameLoop():
-    gameover = False
-    gameclose = False
+# initial score
+score = 0
 
-    # algkoordinaadid
-    posX = screenX / 2
-    posY = screenY / 2
 
-    # liikumine
-    speedX = 0
-    speedY = 0
+# displaying Score function
+def show_score(choice, color, font, size):
+    # creating font object score_font
+    score_font = pygame.font.SysFont(font, size)
 
-    # uss
-    snakeList = []
-    snakeLength = 1
+    # create the display surface object
+    # score_surface
+    score_surface = score_font.render('Score : ' + str(score), True, color)
 
-    # toit
-    foodX, foodY = newFood()
+    # create a rectangular object for the text
+    # surface object
+    score_rect = score_surface.get_rect()
 
-    # eritoit
-    bonusFood = False
-    bonusX = 0
-    bonusY = 0
-    bonusTime = 0
+    # displaying text
+    game_window.blit(score_surface, score_rect)
 
-    score = 0
 
-    while not gameover:
+# game over function
+def game_over():
+    # creating font object my_font
+    my_font = pygame.font.SysFont('times new roman', 50)
 
-        while gameclose:
-            screen.fill(blue)
+    # creating a text surface on which text
+    # will be drawn
+    game_over_surface = my_font.render(
+        'Your Score is : ' + str(score), True, red)
 
-            loseText = bigFont.render("Mäng läbi!", True, red)
-            scoreText = font.render("Skoor: " + str(score), True, white)
-            againText = font.render("C - uuesti, Q - välju", True, white)
+    # create a rectangular object for the text
+    # surface object
+    game_over_rect = game_over_surface.get_rect()
 
-            screen.blit(loseText, [screenX / 2 - 130, screenY / 2 - 80])
-            screen.blit(scoreText, [screenX / 2 - 60, screenY / 2 - 20])
-            screen.blit(againText, [screenX / 2 - 140, screenY / 2 + 30])
+    # setting position of the text
+    game_over_rect.midtop = (window_x / 2, window_y / 4)
 
-            pygame.display.update()
+    # blit will draw the text on screen
+    game_window.blit(game_over_surface, game_over_rect)
+    pygame.display.flip()
 
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    gameover = True
-                    gameclose = False
+    # after 2 seconds we will quit the program
+    time.sleep(2)
 
-                # klahvivajutus
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_q:
-                        gameover = True
-                        gameclose = False
-
-                    if event.key == pygame.K_c:
-                        gameLoop()
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                gameover = True
-
-            # klahvivajutus
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_LEFT and speedX == 0:
-                    speedX = -snakeBlock
-                    speedY = 0
-
-                elif event.key == pygame.K_RIGHT and speedX == 0:
-                    speedX = snakeBlock
-                    speedY = 0
-
-                elif event.key == pygame.K_UP and speedY == 0:
-                    speedY = -snakeBlock
-                    speedX = 0
-
-                elif event.key == pygame.K_DOWN and speedY == 0:
-                    speedY = snakeBlock
-                    speedX = 0
-
-        # ussi liikumine
-        posX += speedX
-        posY += speedY
-
-        # mängu piirid
-        if posX >= screenX or posX < 0 or posY >= screenY or posY < 40:
-            gameclose = True
-
-        # taust
-        screen.fill(blue)
-
-        # info riba
-        pygame.draw.rect(screen, black, [0, 0, screenX, 40])
-        scoreText = font.render("Skoor: " + str(score), True, white)
-        screen.blit(scoreText, [10, 8])
-
-        # tavaline toit
-        pygame.draw.rect(screen, red, [foodX, foodY, snakeBlock, snakeBlock])
-
-        # eritoit
-        if bonusFood:
-            pygame.draw.rect(screen, yellow, [bonusX, bonusY, snakeBlock, snakeBlock])
-
-        # ussi pea
-        snakeHead = []
-        snakeHead.append(posX)
-        snakeHead.append(posY)
-        snakeList.append(snakeHead)
-
-        # ussi pikkuse hoidmine
-        if len(snakeList) > snakeLength:
-            del snakeList[0]
-
-        # enda vastu minemine
-        for block in snakeList[:-1]:
-            if block == snakeHead:
-                gameclose = True
-
-        drawSnake(snakeList)
-
-        pygame.display.update()
-
-        # tavalise toidu söömine
-        if posX == foodX and posY == foodY:
-            foodX, foodY = newFood()
-            snakeLength += 1
-            score += 1
-
-            # iga kolmanda punkti järel tekib eritoit
-            if score % 3 == 0:
-                bonusFood = True
-                bonusX, bonusY = newFood()
-                bonusTime = 250
-
-        # eritoidu söömine
-        if bonusFood and posX == bonusX and posY == bonusY:
-            bonusFood = False
-            snakeLength += 3
-            score += 5
-
-        # eritoit kaob mõne aja pärast ära
-        if bonusFood:
-            bonusTime -= 1
-
-            if bonusTime <= 0:
-                bonusFood = False
-
-        clock.tick(snakeSpeed)
-
+    # deactivating pygame library
     pygame.quit()
+
+    # quit the program
     quit()
 
-gameLoop()
+
+# Main Function
+while True:
+
+    # handling key events
+    for event in pygame.event.get():
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_UP:
+                change_to = 'UP'
+            if event.key == pygame.K_DOWN:
+                change_to = 'DOWN'
+            if event.key == pygame.K_LEFT:
+                change_to = 'LEFT'
+            if event.key == pygame.K_RIGHT:
+                change_to = 'RIGHT'
+
+    # If two keys pressed simultaneously
+    # we don't want snake to move into two
+    # directions simultaneously
+    if change_to == 'UP' and direction != 'DOWN':
+        direction = 'UP'
+    if change_to == 'DOWN' and direction != 'UP':
+        direction = 'DOWN'
+    if change_to == 'LEFT' and direction != 'RIGHT':
+        direction = 'LEFT'
+    if change_to == 'RIGHT' and direction != 'LEFT':
+        direction = 'RIGHT'
+
+    # Moving the snake
+    if direction == 'UP':
+        snake_position[1] -= 10
+    if direction == 'DOWN':
+        snake_position[1] += 10
+    if direction == 'LEFT':
+        snake_position[0] -= 10
+    if direction == 'RIGHT':
+        snake_position[0] += 10
+
+    # Snake body growing mechanism
+    # if fruits and snakes collide then scores
+    # will be incremented by 10
+    snake_body.insert(0, list(snake_position))
+    if snake_position[0] == fruit_position[0] and snake_position[1] == fruit_position[1]:
+        score += 10
+        fruit_spawn = False
+    else:
+        snake_body.pop()
+
+    if not fruit_spawn:
+        fruit_position = [random.randrange(1, (window_x // 10)) * 10,
+                          random.randrange(1, (window_y // 10)) * 10]
+
+    fruit_spawn = True
+    game_window.fill(black)
+
+    for pos in snake_body:
+        pygame.draw.rect(game_window, green,
+                         pygame.Rect(pos[0], pos[1], 10, 10))
+    pygame.draw.rect(game_window, white, pygame.Rect(
+        fruit_position[0], fruit_position[1], 10, 10))
+
+    # Game Over conditions
+    if snake_position[0] < 0 or snake_position[0] > window_x - 10:
+        game_over()
+    if snake_position[1] < 0 or snake_position[1] > window_y - 10:
+        game_over()
+
+    # Touching the snake body
+    for block in snake_body[1:]:
+        if snake_position[0] == block[0] and snake_position[1] == block[1]:
+            game_over()
+
+    # displaying score continuously
+    show_score(1, white, 'times new roman', 20)
+
+    # Refresh game screen
+    pygame.display.update()
+
+    # Frame Per Second /Refresh Rate
+    fps.tick(snake_speed)
