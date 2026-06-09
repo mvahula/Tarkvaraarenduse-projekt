@@ -76,7 +76,7 @@ while not gameover:
     screen.blit(ballImage, ball)
     screen.blit(baseImage, base)
 
-    # skoori kuvamine
+    # skoori kuvamine.
     scoreText = font.render("Skoor: " + str(score), True, black)
     screen.blit(scoreText, [10, 10])
 
