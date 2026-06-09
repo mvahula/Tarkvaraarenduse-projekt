@@ -17,6 +17,10 @@ clock = pygame.time.Clock()
 pygame.mixer.music.load("2.mp3")
 pygame.mixer.music.play(-1)
 
+# helid
+kolksSound = pygame.mixer.Sound("kolks.mp3")
+losingSound = pygame.mixer.Sound("losing.mp3")
+
 # pall
 ball = pygame.Rect(100, 100, 20, 20)
 ballImage = pygame.image.load("pall.png")
@@ -35,6 +39,7 @@ baseSpeedX = 5
 # skoor
 score = 0
 font = pygame.font.SysFont(None, 36)
+bigFont = pygame.font.SysFont(None, 70)
 
 gameover = False
 while not gameover:
@@ -74,10 +79,25 @@ while not gameover:
 
     # kui pall puudutab alumist äärt
     if ball.bottom >= screenY:
+        pygame.mixer.music.stop()
+        losingSound.play()
+
+        screen.fill(lBlue)
+
+        loseText = bigFont.render("Mäng läbi!", True, black)
+        scoreText = font.render("Skoor: " + str(score), True, black)
+
+        screen.blit(loseText, [screenX / 2 - 140, screenY / 2 - 60])
+        screen.blit(scoreText, [screenX / 2 - 60, screenY / 2 + 10])
+
+        pygame.display.flip()
+        pygame.time.wait(3000)
+
         gameover = True
 
     # kokkupõrke tuvastamine
     if ball.colliderect(base) and ballSpeedY > 0:
+        kolksSound.play()
         ballSpeedY = -ballSpeedY
         score += 1
 
