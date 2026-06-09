@@ -70,7 +70,7 @@ while not gameover:
         ballSpeedY = -ballSpeedY
         score += 1
 
-    # joonistamine
+    # joonistamine.
     screen.fill(lBlue)
 
     screen.blit(ballImage, ball)
