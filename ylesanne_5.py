@@ -15,7 +15,7 @@ screen.fill(lBlue)
 clock = pygame.time.Clock()
 
 # pall
-ball = pygame.Rect(100, 100, 20, 20)
+ball = pygame.Rect(0, 0, 20, 20)
 ballImage = pygame.image.load("pall.png")
 ballImage = pygame.transform.scale(ballImage, [ball.width, ball.height])
 
