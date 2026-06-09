@@ -1,3 +1,4 @@
+'''
 import pygame
 pygame.init()
 
@@ -114,3 +115,5 @@ while not gameover:
     pygame.display.flip()
 
 pygame.quit()
+'''
+
