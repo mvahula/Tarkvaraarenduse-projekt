@@ -1,3 +1,4 @@
+'''
 import pygame
 pygame.init()
 
@@ -175,3 +176,4 @@ while not gameover:
 
 # Kui mängutsükkel lõppeb, sulgeme Pygame'i korralikult.
 pygame.quit()
+'''
