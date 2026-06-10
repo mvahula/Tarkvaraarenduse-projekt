@@ -1,4 +1,3 @@
-#https://github.com/AditHash/Python-Snake-Game
 import pygame
 import random
 import sys
