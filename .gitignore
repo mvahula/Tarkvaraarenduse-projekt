@@ -1,6 +1,2 @@
-.venv/
-.venv313/
-__pycache__/
-.idea/
-*.pyc
-.env
+.*
+!.gitignore
